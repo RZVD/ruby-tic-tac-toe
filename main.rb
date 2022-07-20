@@ -1,4 +1,3 @@
-
 def is_alpha?(nr)
     [1,2,3,4,5,6,7,8,9].any? {|n| n == nr}
 end
@@ -115,12 +114,11 @@ class Game
     end
 end
 
-replay = false
+replay = true
 
-until replay
+while replay
     game = Game.new()
     game.play()
     puts "Wanna play again? (y/n)"
-    replay = gets.chomp.downcase == 'y' ? false : true; 
-
+    replay = gets.chomp.downcase == 'y' ? true : false; 
 end
