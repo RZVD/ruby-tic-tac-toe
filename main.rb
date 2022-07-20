@@ -11,6 +11,8 @@ end
 class Board
     attr_reader :board
     attr_reader :won
+    attr_reader :winner
+
     WIN_CONDITIONS = [
         [0, 1, 2],
         [3, 4, 5],
@@ -25,6 +27,7 @@ class Board
     def initialize
         @board = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         @won = false;
+        @winner = nil
     end
     
     public
@@ -35,8 +38,13 @@ class Board
         if is_alpha? @board[move - 1]
             @board[move - 1] = player_symbol
         else puts "error, invalid move"
+            return 'err'
         end
         @won = winning_move?
+        
+        if @won 
+            @winner = player 
+        end
     end             
 
     def print_board
@@ -68,44 +76,51 @@ class Player
 end
 
 class Game
-    attr_reader :board
-    attr_reader :player1
-    attr_reader :player2
+    attr_reader :grid
+    attr_accessor :player1
+    attr_accessor :player2
     attr_reader :current_player
 
     def initialize
-        @board = Board.new
+        @grid = Board.new
         @player1 = Player.new("Player1",'X') 
         @player2 = Player.new("Player2",'O')
         @current_player = @player1
+        @grid.print_board
     end
-
+    private
     def turn(move)
-        @board.place_symbol(@current_player, move)
-        if @current_player == @player1
+        err = @grid.place_symbol(@current_player, move)
+        if err == "err"
+            return
+        elsif @current_player == @player1
             @current_player = @player2
         else
             @current_player = @player1
         end  
     end
 
-end
-
-
-game = Game.new()
-
-until is_full?(game.board.board) || game.board.won
-    move = gets.chomp.to_i
-    game.turn(move)
+    public
     
-    game.board.print_board
+    def play
+        until is_full?(grid.board) || grid.won
+            puts "#{current_player.name}'s Turn"
+            move = gets.chomp.to_i
+            turn(move)
+            grid.print_board
+        end
+        
+        puts "\n\n #{grid.winner.name} Won!"
+
+    end
 end
 
+replay = false
 
+until replay
+    game = Game.new()
+    game.play()
+    puts "Wanna play again? (y/n)"
+    replay = gets.chomp.downcase == 'y' ? false : true; 
 
-
-
-
-#123
-#456
-#789
+end
